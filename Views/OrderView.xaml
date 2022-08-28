@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="WealthFrogs.Views.OrderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:cv="clr-namespace:WealthFrogs.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:WealthFrogs.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <cv:DirectionToColorConverter x:Key="DirectionToColor"/>
+        <cv:DirectionToWordConverter x:Key="DirectionToWord"/>
+        <cv:StatusToVisibilityConverter x:Key="StatusToVisibility"/>
+        <cv:StatusToWordConverter x:Key="StatusToWord"/>
+        <cv:TimestampToDateTimeConverter x:Key="TimestampToDateTime"/>
+    </UserControl.Resources>
+    
+    
+    <Grid>
+        <ListView ItemsSource="{Binding OrderItems}" x:Name="orderListGridView">
+            <ListView.Resources>
+
+                <Style x:Key="GridColumnHeaderStyle" TargetType="GridViewColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                </Style>
+
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn 
+                            DisplayMemberBinding="{Binding id}"
+                            Header="订单号">
+                    </GridViewColumn>
+                    <GridViewColumn
+                            DisplayMemberBinding="{Binding stock_id}"
+                            Header="股票代码" />
+                    <GridViewColumn Header="交易方向">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate >
+                                <TextBlock Text="{Binding direction, Converter={StaticResource DirectionToWord}}"
+                               Foreground="{Binding direction, Converter={StaticResource DirectionToColor}}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn
+                            DisplayMemberBinding="{Binding payload}"
+                            Header="已报"/>
+                    <GridViewColumn
+                            DisplayMemberBinding="{Binding deal}"
+                            Header="已成" />
+                    <GridViewColumn Header="状态">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button
+                                      Style="{StaticResource MaterialDesignPaperLightButton}"
+                                      Content="{Binding status, Converter={StaticResource StatusToWord}}"/>
+                                    <Button
+                                      Style="{StaticResource MaterialDesignPaperLightButton}"
+                                      Content="撤单"
+                                      Visibility="{Binding status, Converter={StaticResource StatusToVisibility}}"
+                                      Command="{Binding DataContext.CancelCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ItemsControl}}"
+                                      CommandParameter="{Binding id}"  />     
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn
+                            DisplayMemberBinding="{Binding timestamp, Converter={StaticResource TimestampToDateTime}}"
+                            Header="下单时间" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>
